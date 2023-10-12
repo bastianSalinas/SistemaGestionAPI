@@ -14,18 +14,11 @@ namespace SistemaGestionInterface
 {
     public partial class frmProductos : Form
     {
+        int idProducto = 0;
+        bool editar = false;
         public frmProductos()
         {
             InitializeComponent();
-
-            #region inicioPlaceholder
-            txtIdProducto.Text = "Ingrese Id Producto";
-            txtIdProducto.ForeColor = SystemColors.GrayText;
-            txtDescripcion.Text = "Ingrese Descripcion";
-            txtDescripcion.ForeColor = SystemColors.GrayText;
-            txtIdUsuario.Text = "Ingrese Id Usuario";
-            txtIdUsuario.ForeColor = SystemColors.GrayText;
-            #endregion
         }
 
         private void frmProductos_Load(object sender, EventArgs e)
@@ -37,115 +30,87 @@ namespace SistemaGestionInterface
 
         private void btnGuardar_Click(object sender, EventArgs e)
         {
-            Producto prod = new Producto();
-            prod.Descripciones = txtDescripcion.Text;
-            prod.Costo = txtCosto.Value;
-            prod.PrecioVenta = txtPrecioVenta.Value;
-            prod.Stock = txtStock.Value;
-            prod.IdUsuario = Convert.ToInt16(txtIdUsuario.Text);
-            MessageBox.Show(ProductoBussiness.CrearProducto(prod));
+            if(txtDescripcion.Text != "" && txtCosto.Text != "" && txtPrecioVenta.Text != "" && txtStock.Text !="" && txtIdUsuario.Text !="")
+            {
+                if (editar == false)
+                {
+                    Producto prod = new Producto();
+                    prod.Descripciones = txtDescripcion.Text;
+                    prod.Costo = Convert.ToDecimal(txtCosto.Text);
+                    prod.PrecioVenta = Convert.ToDecimal(txtPrecioVenta.Text);
+                    prod.Stock = Convert.ToDecimal(txtStock.Text);
+                    prod.IdUsuario = Convert.ToInt16(txtIdUsuario.Text);
+                    MessageBox.Show(ProductoBussiness.CrearProducto(prod));
 
-            List<Producto> productos = ProductoBussiness.GetProductos();
-            dgProductos.DataSource = null;
-            dgProductos.DataSource = productos;
-            txtDescripcion.Text = "Ingrese Descripcion";
-            txtDescripcion.ForeColor = SystemColors.GrayText;
-            txtIdUsuario.Text = "Ingrese Id Usuario";
-            txtIdUsuario.ForeColor = SystemColors.GrayText;
-            txtCosto.Value = 0;
-            txtPrecioVenta.Value = 0;
-            txtStock.Value = 0;
+                    txtDescripcion.Text = "";
+                    txtCosto.Text = "";
+                    txtPrecioVenta.Text = "";
+                    txtStock.Text = "";
+                    txtIdUsuario.Text = "";
+
+                    List<Producto> productos = ProductoBussiness.GetProductos();
+                    dgProductos.DataSource = null;
+                    dgProductos.DataSource = productos;
+                }
+                if (editar == true)
+                {
+                    Producto prod = new Producto();
+                    prod.Id = idProducto;
+                    prod.Descripciones = txtDescripcion.Text;
+                    prod.Costo = Convert.ToDecimal(txtCosto.Text);
+                    prod.PrecioVenta = Convert.ToDecimal(txtPrecioVenta.Text);
+                    prod.Stock = Convert.ToDecimal(txtStock.Text);
+                    prod.IdUsuario = Convert.ToInt16(txtIdUsuario.Text);
+                    MessageBox.Show(ProductoBussiness.ModificarProducto(prod));
+                    txtDescripcion.Text = "";
+                    txtCosto.Text = "";
+                    txtPrecioVenta.Text = "";
+                    txtStock.Text = "";
+                    txtIdUsuario.Text = "";
+                    List<Producto> productos = ProductoBussiness.GetProductos();
+                    dgProductos.DataSource = null;
+                    dgProductos.DataSource = productos;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Para guardar se deben completar todos los campos");
+            }     
         }
 
         private void btnEliminar_Click(object sender, EventArgs e)
         {
             Producto prod = new Producto();
-            prod.Id = Convert.ToInt16(txtIdProducto.Text);
-            MessageBox.Show(ProductoBussiness.EliminarProducto(prod));
-
-            List<Producto> productos = ProductoBussiness.GetProductos();
-            dgProductos.DataSource = null;
-            dgProductos.DataSource = productos;
-            txtIdProducto.Text = "Ingrese Id Producto";
-            txtIdProducto.ForeColor = SystemColors.GrayText;
+            if (dgProductos.SelectedRows.Count > 0)
+            {
+                prod.Id = Convert.ToInt16(dgProductos.CurrentRow.Cells["Id"].Value.ToString());
+                MessageBox.Show(ProductoBussiness.EliminarProducto(prod));
+                List<Producto> productos = ProductoBussiness.GetProductos();
+                dgProductos.DataSource = null;
+                dgProductos.DataSource = productos;
+            }
+            else
+            {
+                MessageBox.Show("Para eliminar seleccione el producto de la tabla");
+            }
         }
 
         private void btnModificar_Click(object sender, EventArgs e)
         {
-            Producto prod = new Producto();
-            prod.Id = Convert.ToInt16(txtIdProducto.Text);
-            prod.Descripciones = txtDescripcion.Text;
-            prod.Costo = txtCosto.Value;
-            prod.PrecioVenta = txtPrecioVenta.Value;
-            prod.Stock = txtStock.Value;
-            prod.IdUsuario = Convert.ToInt16(txtIdUsuario.Text);
-            MessageBox.Show(ProductoBussiness.ModificarProducto(prod));
-
-            List<Producto> productos = ProductoBussiness.GetProductos();
-            dgProductos.DataSource = null;
-            dgProductos.DataSource = productos;
-            txtIdProducto.Text = "Ingrese Id Producto";
-            txtIdProducto.ForeColor = SystemColors.GrayText;
-            txtCosto.Value = 0;
-            txtPrecioVenta.Value = 0;
-            txtStock.Value = 0;
-            txtDescripcion.Text = "Ingrese Descripcion";
-            txtDescripcion.ForeColor = SystemColors.GrayText;
-            txtIdUsuario.Text = "Ingrese Id Usuario";
-            txtIdUsuario.ForeColor = SystemColors.GrayText;
-        }
-
-        #region placeholderTextbox
-
-        private void txtIdProducto_Enter(object sender, EventArgs e)
-        {
-            if (txtIdProducto.Text == "Ingrese Id Producto") ;
+            if (dgProductos.SelectedRows.Count > 0)
             {
-                txtIdProducto.Text = "";
-                txtIdProducto.ForeColor = SystemColors.WindowText;
+                editar = true;
+                txtDescripcion.Text = dgProductos.CurrentRow.Cells["Descripciones"].Value.ToString();
+                txtCosto.Text = dgProductos.CurrentRow.Cells["Costo"].Value.ToString();
+                txtPrecioVenta.Text = dgProductos.CurrentRow.Cells["PrecioVenta"].Value.ToString();
+                txtStock.Text = dgProductos.CurrentRow.Cells["Stock"].Value.ToString();
+                txtIdUsuario.Text = dgProductos.CurrentRow.Cells["IdUsuario"].Value.ToString();
+                idProducto = Convert.ToInt16(dgProductos.CurrentRow.Cells["Id"].Value.ToString());
+            }
+            else
+            {
+                MessageBox.Show("Para modificar selecciona una linea de la tabla");
             }
         }
-        private void txtIdProducto_Leave(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(txtIdProducto.Text))
-            {
-                txtIdProducto.Text = "Ingrese Id Venta";
-                txtIdProducto.ForeColor = SystemColors.GrayText;
-            }
-        }
-        private void txtDescripcion_Enter(object sender, EventArgs e)
-        {
-            if (txtDescripcion.Text == "Ingrese Descripcion")
-            {
-                txtDescripcion.Text = "";
-                txtDescripcion.ForeColor = SystemColors.WindowText;
-            }
-        }
-        private void txtDescripcion_Leave(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(txtDescripcion.Text))
-            {
-                txtDescripcion.Text = "Ingrese Descripcion";
-                txtDescripcion.ForeColor = SystemColors.GrayText;
-            }
-        }
-        private void txtIdUsuario_Enter(object sender, EventArgs e)
-        {
-            if (txtIdUsuario.Text == "Ingrese Id Usuario")
-            {
-                txtIdUsuario.Text = "";
-                txtIdUsuario.ForeColor = SystemColors.WindowText;
-            }
-        }
-        private void txtIdUsuario_Leave(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(txtIdUsuario.Text))
-            {
-                txtIdUsuario.Text = "Ingrese Id Usuario";
-                txtIdUsuario.ForeColor = SystemColors.GrayText;
-            }
-        }
-
-        #endregion
     }
 }

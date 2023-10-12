@@ -14,18 +14,11 @@ namespace SistemaGestionInterface
 {
     public partial class frmVentas : Form
     {
+        int idVenta = 0;
+        bool editar = false;
         public frmVentas()
         {
             InitializeComponent();
-
-            #region inicioPlaceholder
-            txtIdVenta.Text = "Ingrese Id Venta";
-            txtIdVenta.ForeColor = SystemColors.GrayText;
-            txtComentarios.Text = "Ingrese Comentario";
-            txtComentarios.ForeColor = SystemColors.GrayText;
-            txtIdUsuario.Text = "Ingrese Id Usuario";
-            txtIdUsuario.ForeColor = SystemColors.GrayText;
-            #endregion
         }
 
         private void frmVentas_Load(object sender, EventArgs e)
@@ -37,106 +30,76 @@ namespace SistemaGestionInterface
 
         private void btnGuardar_Click(object sender, EventArgs e)
         {
-            Venta venta = new Venta();
-            venta.Comentarios = txtComentarios.Text;
-            venta.IdUsuario = Convert.ToInt16(txtIdUsuario.Text);
-            MessageBox.Show(VentaBussiness.CrearVenta(venta));
+            if (txtComentarios.Text != "" && txtIdUsuario.Text != "")
+            {
+                if (editar == false)
+                {
+                    Venta venta = new Venta();
+                    venta.Comentarios = txtComentarios.Text;
+                    venta.IdUsuario = Convert.ToInt16(txtIdUsuario.Text);
+                    MessageBox.Show(VentaBussiness.CrearVenta(venta));
 
-            List<Venta> ventas = VentaBussiness.GetVentas();
-            dgVentas.DataSource = null;
-            dgVentas.DataSource = ventas;
+                    txtComentarios.Text = "";
+                    txtIdUsuario.Text = "";
 
-            txtComentarios.Text = "Ingrese Comentario";
-            txtComentarios.ForeColor = SystemColors.GrayText;
-            txtIdUsuario.Text = "Ingrese Id Usuario";
-            txtIdUsuario.ForeColor = SystemColors.GrayText;
+                    List<Venta> ventas = VentaBussiness.GetVentas();
+                    dgVentas.DataSource = null;
+                    dgVentas.DataSource = ventas;
+                }
+                if (editar == true)
+                {
+                    Venta venta = new Venta();
+                    venta.Id = idVenta;
+                    venta.Comentarios = txtComentarios.Text;
+                    venta.IdUsuario = Convert.ToInt16(txtIdUsuario.Text);
+                    MessageBox.Show(VentaBussiness.ModificarVenta(venta));
+
+                    txtComentarios.Text = "";
+                    txtIdUsuario.Text = "";
+
+                    List<Venta> ventas = VentaBussiness.GetVentas();
+                    dgVentas.DataSource = null;
+                    dgVentas.DataSource = ventas;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Para guardar se deben completar todos los campos");
+            }
         }
 
         private void btnEliminar_Click(object sender, EventArgs e)
         {
-            Venta venta = new Venta();
-            venta.Id = Convert.ToInt16(txtIdVenta.Text);
-            MessageBox.Show(VentaBussiness.EliminarVenta(venta));
+            if (dgVentas.SelectedRows.Count > 0)
+            {
+                Venta venta = new Venta();
+                venta.Id = Convert.ToInt16(dgVentas.CurrentRow.Cells["Id"].Value.ToString());
+                MessageBox.Show(VentaBussiness.EliminarVenta(venta));
 
-            List<Venta> ventas = VentaBussiness.GetVentas();
-            dgVentas.DataSource = null;
-            dgVentas.DataSource = ventas;
-
-            txtIdVenta.Text = "Ingrese Id Venta";
-            txtIdVenta.ForeColor = SystemColors.GrayText;
+                List<Venta> ventas = VentaBussiness.GetVentas();
+                dgVentas.DataSource = null;
+                dgVentas.DataSource = ventas;
+            }
+            else
+            {
+                MessageBox.Show("Para eliminar se debe seleccionar una linea de la tabla");
+            }
         }
 
         private void btnModificar_Click(object sender, EventArgs e)
         {
-            Venta venta = new Venta();
-            venta.Id = Convert.ToInt16(txtIdVenta.Text);
-            venta.Comentarios = txtComentarios.Text;
-            venta.IdUsuario = Convert.ToInt16(txtIdUsuario.Text);
-            MessageBox.Show(VentaBussiness.ModificarVenta(venta));
+            if (dgVentas.SelectedRows.Count > 0)
+            {
+                editar = true;
+                txtComentarios.Text = dgVentas.CurrentRow.Cells["Comentarios"].Value.ToString();
+                txtIdUsuario.Text = dgVentas.CurrentRow.Cells["IdUsuario"].Value.ToString();
+                idVenta = Convert.ToInt16(dgVentas.CurrentRow.Cells["Id"].Value.ToString());
+            }
+            else
+            {
+                MessageBox.Show("Para modificar selecciona una linea de la tabla");
+            }
 
-            List<Venta> ventas = VentaBussiness.GetVentas();
-            dgVentas.DataSource = null;
-            dgVentas.DataSource = ventas;
-
-            txtIdVenta.Text = "Ingrese Id Venta";
-            txtIdVenta.ForeColor = SystemColors.GrayText;
-            txtComentarios.Text = "Ingrese Comentario";
-            txtComentarios.ForeColor = SystemColors.GrayText;
-            txtIdUsuario.Text = "Ingrese Id Usuario";
-            txtIdUsuario.ForeColor = SystemColors.GrayText;
         }
-
-        #region placeholderTextbox
-
-        private void txtIdVenta_Enter(object sender, EventArgs e)
-        {
-            if (txtIdVenta.Text == "Ingrese Id Venta") ;
-            {
-                txtIdVenta.Text = "";
-                txtIdVenta.ForeColor = SystemColors.WindowText;
-            }
-        }
-        private void txtIdVenta_Leave(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(txtIdVenta.Text))
-            {
-                txtIdVenta.Text = "Ingrese Id Venta";
-                txtIdVenta.ForeColor = SystemColors.GrayText;
-            }
-        }
-        private void txtComentario_Enter(object sender, EventArgs e)
-        {
-            if (txtComentarios.Text == "Ingrese Comentario")
-            {
-                txtComentarios.Text = "";
-                txtComentarios.ForeColor = SystemColors.WindowText;
-            }
-        }
-        private void txtComentario_Leave(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(txtComentarios.Text))
-            {
-                txtComentarios.Text = "Ingrese Comentario";
-                txtComentarios.ForeColor = SystemColors.GrayText;
-            }
-        }
-        private void txtIdUsuario_Enter(object sender, EventArgs e)
-        {
-            if (txtIdUsuario.Text == "Ingrese Id Usuario")
-            {
-                txtIdUsuario.Text = "";
-                txtIdUsuario.ForeColor = SystemColors.WindowText;
-            }
-        }
-        private void txtIdUsuario_Leave(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(txtIdUsuario.Text))
-            {
-                txtIdUsuario.Text = "Ingrese Id Usuario";
-                txtIdUsuario.ForeColor = SystemColors.GrayText;
-            }
-        }
-
-        #endregion
     }
 }

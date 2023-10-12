@@ -14,19 +14,11 @@ namespace SistemaGestionInterface
 {
     public partial class frmProductosVendidos : Form
     {
+        int idProductoVendido = 0;
+        bool editar = false;
         public frmProductosVendidos()
         {
             InitializeComponent();
-            #region inicioPlaceholder
-            txtId.Text = "Ingrese Id Producto Vendido";
-            txtId.ForeColor = SystemColors.GrayText;
-            txtStock.Text = "Ingrese Stock";
-            txtStock.ForeColor = SystemColors.GrayText;
-            txtIdProducto.Text = "Ingrese Id Producto";
-            txtIdProducto.ForeColor = SystemColors.GrayText;
-            txtIdVenta.Text = "Ingrese Id Venta";
-            txtIdVenta.ForeColor = SystemColors.GrayText;
-            #endregion
         }
 
         private void frmProductosVendidos_Load(object sender, EventArgs e)
@@ -38,75 +30,81 @@ namespace SistemaGestionInterface
 
         private void btnGuardar_Click(object sender, EventArgs e)
         {
-            ProductoVendido prodVendido = new ProductoVendido();
-            prodVendido.Stock = Convert.ToInt16(txtStock.Text);
-            prodVendido.IdProducto = Convert.ToInt16(txtIdProducto.Text);
-            prodVendido.IdVenta = Convert.ToInt16(txtIdVenta.Text);
-            MessageBox.Show(ProductoVendidoBussiness.CrearProductoVendido(prodVendido));
+            if (txtIdProducto.Text != "" && txtIdVenta.Text != "" && txtStock.Text != "")
+            {
+                if (editar == false)
+                {
+                    ProductoVendido prodVendido = new ProductoVendido();
+                    prodVendido.Stock = Convert.ToInt16(txtStock.Text);
+                    prodVendido.IdProducto = Convert.ToInt16(txtIdProducto.Text);
+                    prodVendido.IdVenta = Convert.ToInt16(txtIdVenta.Text);
+                    MessageBox.Show(ProductoVendidoBussiness.CrearProductoVendido(prodVendido));
 
-            List<ProductoVendido> prodVendidos = ProductoVendidoBussiness.GetProductosVendidos();
-            dgProductosVendidos.DataSource = null;
-            dgProductosVendidos.DataSource = prodVendidos;
+                    List<ProductoVendido> prodVendidos = ProductoVendidoBussiness.GetProductosVendidos();
+                    dgProductosVendidos.DataSource = null;
+                    dgProductosVendidos.DataSource = prodVendidos;
+
+                    txtStock.Text = "";
+                    txtIdProducto.Text = "";
+                    txtIdVenta.Text = "";
+                }
+                if (editar == true)
+                {
+                    ProductoVendido prodVendido = new ProductoVendido();
+                    prodVendido.Id = idProductoVendido;
+                    prodVendido.Stock = Convert.ToInt16(txtStock.Text);
+                    prodVendido.IdProducto = Convert.ToInt16(txtIdProducto.Text);
+                    prodVendido.IdVenta = Convert.ToInt16(txtIdVenta.Text);
+                    MessageBox.Show(ProductoVendidoBussiness.ModificarProductoVendido(prodVendido));
+                    txtStock.Text = "";
+                    txtIdProducto.Text = "";
+                    txtIdVenta.Text = "";
+                    List<ProductoVendido> prodVendidos = ProductoVendidoBussiness.GetProductosVendidos();
+                    dgProductosVendidos.DataSource = null;
+                    dgProductosVendidos.DataSource = prodVendidos;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Para guardar se deben completar todos los campos");
+            }
+
+
         }
 
         private void btnEliminar_Click(object sender, EventArgs e)
         {
-            ProductoVendido prodVendido = new ProductoVendido();
-            prodVendido.Id = Convert.ToInt16(txtId.Text);
-            MessageBox.Show(ProductoVendidoBussiness.EliminarProductoVendido(prodVendido));
+            if (dgProductosVendidos.SelectedRows.Count > 0)
+            {
+                ProductoVendido prodVendido = new ProductoVendido();
+                prodVendido.Id = Convert.ToInt16(dgProductosVendidos.CurrentRow.Cells["Id"].Value.ToString());
+                MessageBox.Show(ProductoVendidoBussiness.EliminarProductoVendido(prodVendido));
 
-            List<ProductoVendido> prodVendidos = ProductoVendidoBussiness.GetProductosVendidos();
-            dgProductosVendidos.DataSource = null;
-            dgProductosVendidos.DataSource = prodVendidos;
+                List<ProductoVendido> prodVendidos = ProductoVendidoBussiness.GetProductosVendidos();
+                dgProductosVendidos.DataSource = null;
+                dgProductosVendidos.DataSource = prodVendidos;
+            }
+            else
+            {
+                MessageBox.Show("Para eliminar se debe seleccionar una linea de la tabla");
+            }
         }
 
         private void btnModificar_Click(object sender, EventArgs e)
         {
-            ProductoVendido prodVendido = new ProductoVendido();
-            prodVendido.Id = Convert.ToInt16(txtId.Text);
-            prodVendido.Stock = Convert.ToInt16(txtStock.Text);
-            prodVendido.IdProducto = Convert.ToInt16(txtIdProducto.Text);
-            prodVendido.IdVenta = Convert.ToInt16(txtIdVenta.Text);
-            MessageBox.Show(ProductoVendidoBussiness.ModificarProductoVendido(prodVendido));
+            if (dgProductosVendidos.SelectedRows.Count > 0)
+            {
+                editar = true;
+                txtStock.Text = dgProductosVendidos.CurrentRow.Cells["Stock"].Value.ToString();
+                txtIdProducto.Text = dgProductosVendidos.CurrentRow.Cells["IdProducto"].Value.ToString();
+                txtIdVenta.Text = dgProductosVendidos.CurrentRow.Cells["IdVenta"].Value.ToString();
+                idProductoVendido = Convert.ToInt16(dgProductosVendidos.CurrentRow.Cells["Id"].Value.ToString());
+            }
+            else
+            {
+                MessageBox.Show("Para modificar selecciona una linea de la tabla");
+            }
+        }
 
-            List<ProductoVendido> prodVendidos = ProductoVendidoBussiness.GetProductosVendidos();
-            dgProductosVendidos.DataSource = null;
-            dgProductosVendidos.DataSource = prodVendidos;
-        }
-        #region placeholderTextbox
-
-        private void txtId_Enter(object sender, EventArgs e)
-        {
-            if (txtId.Text == "Ingrese Id Producto Vendido") ;
-            {
-                txtIdProducto.Text = "";
-                txtIdProducto.ForeColor = SystemColors.WindowText;
-            }
-        }
-        private void txtStock_Enter(object sender, EventArgs e)
-        {
-            if (txtStock.Text == "Ingrese Stock") ;
-            {
-                txtStock.Text = "";
-                txtStock.ForeColor = SystemColors.WindowText;
-            }
-        }
-        private void txtIdProducto_Enter(object sender, EventArgs e)
-        {
-            if (txtIdProducto.Text == "Ingrese Id Producto") ;
-            {
-                txtIdProducto.Text = "";
-                txtIdProducto.ForeColor = SystemColors.WindowText;
-            }
-        }
-        private void txtIdVenta_Enter(object sender, EventArgs e)
-        {
-            if (txtIdVenta.Text == "Ingrese Id Venta") ;
-            {
-                txtIdVenta.Text = "";
-                txtIdVenta.ForeColor = SystemColors.WindowText;
-            }
-        }
-        #endregion
     }
 }

@@ -14,7 +14,8 @@ namespace SistemaGestionInterface
             //Application.Run(new frmUsuarios());
             //Application.Run(new frmVentas());
             //Application.Run(new frmProductos());
-            Application.Run(new frmProductosVendidos());
+            //Application.Run(new frmProductosVendidos());
+            Application.Run(new frmPrincipal());
         }
     }
 }
