@@ -9,26 +9,26 @@ namespace SistemaGestionWebAPI.Controllers
     [ApiController]
     public class ProductoController : ControllerBase
     {
-        [HttpGet(Name = "GetProductos")]
+        [HttpGet(Name = "TraerProductos")]
         public IEnumerable<Producto> Get()
         {
             return ProductoBussiness.GetProductos()
             .ToArray();
         }
 
-        [HttpPost(Name = "CrearProductos")]
+        [HttpPost(Name = "CrearProducto")]
         public void Crear([FromBody]Producto prod)
         {
             ProductoBussiness.CrearProducto(prod);
         }
 
-        [HttpPut(Name = "ModificarProductos")]
+        [HttpPut(Name = "ModificarProducto")]
         public void Actualizar([FromBody]Producto prod)
         {
             ProductoBussiness.ModificarProducto(prod);
         }
 
-        [HttpDelete(Name = "EliminarProductos")]
+        [HttpDelete(Name = "EliminarProducto")]
         public void Eliminar([FromBody]Producto prod) 
         {
             ProductoBussiness.EliminarProducto(prod);

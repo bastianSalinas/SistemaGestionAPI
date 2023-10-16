@@ -9,7 +9,7 @@ namespace SistemaGestionWebAPI.Controllers
     [ApiController]
     public class ProductoVendidoController : ControllerBase
     {
-        [HttpGet(Name = "GetProductosVendidos")]
+        [HttpGet(Name = "TraerProductosVendidos")]
         public IEnumerable<ProductoVendido> Get()
         {
             return ProductoVendidoBussiness.GetProductosVendidos()

@@ -196,6 +196,72 @@ namespace SistemaGestionData
                 return null;
             }
         }
+        public static string obtenerNombre(int id)
+        {
+            string nombre = "";
+            string connectionString = AccesoDatos.Conexion();
+
+            string query = "SELECT Nombre FROM Usuario where Id="+id;
+
+            try
+            {
+                using (SqlConnection conexion = new SqlConnection(connectionString))
+                {
+                    conexion.Open();
+
+                    using (SqlCommand comando = new SqlCommand(query, conexion))
+                    {
+                        using (SqlDataReader dr = comando.ExecuteReader())
+                        {
+                            if (dr.HasRows)
+                            {
+                                while (dr.Read())
+                                {
+                                    nombre = dr["Nombre"].ToString();
+
+                                }
+                            }
+                        }
+                    }
+
+                    // Opcional
+                    conexion.Close();
+                }
+                return nombre;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        public static bool ValidarLogin(string NombreUsuario, string Contraseña)
+        {
+            string connectionString = AccesoDatos.Conexion();
+
+            string query = "SELECT COUNT(*) FROM Usuario WHERE NombreUsuario = @NombreUsuario AND Contraseña = @Contraseña";
+
+            try
+            {
+                using (SqlConnection conexion = new SqlConnection(connectionString))
+                {
+                    conexion.Open();
+
+                    using (SqlCommand comando = new SqlCommand(query, conexion))
+                    {
+                        comando.Parameters.AddWithValue("@NombreUsuario", NombreUsuario);
+                        comando.Parameters.AddWithValue("@Contraseña", Contraseña);
+
+                        int count = (int)comando.ExecuteScalar();
+
+                        return count > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
         #endregion
     }
 }

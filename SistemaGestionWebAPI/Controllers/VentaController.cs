@@ -9,14 +9,14 @@ namespace SistemaGestionWebAPI.Controllers
     [ApiController]
     public class VentaController : ControllerBase
     {
-        [HttpGet(Name = "GetVentas")]
+        [HttpGet(Name = "TraerVentas")]
         public IEnumerable<Venta> Get()
         {
             return VentaBussiness.GetVentas()
             .ToArray();
         }
 
-        [HttpPost(Name = "CrearVentas")]
+        [HttpPost(Name = "CargarVenta")]
         public void Crear([FromBody] Venta ven)
         {
             VentaBussiness.CrearVenta(ven);
@@ -28,7 +28,7 @@ namespace SistemaGestionWebAPI.Controllers
             VentaBussiness.ModificarVenta(ven);
         }
 
-        [HttpDelete(Name = "EliminarVentas")]
+        [HttpDelete(Name = "EliminarVenta")]
         public void Eliminar([FromBody] Venta ven)
         {
             VentaBussiness.EliminarVenta(ven);

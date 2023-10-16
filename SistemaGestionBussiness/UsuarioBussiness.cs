@@ -53,5 +53,31 @@ namespace SistemaGestionBussiness
             }
 
         }
+        public static String TraerNombre(int id)
+        {
+            try
+            {
+                UsuarioData.obtenerNombre(id);
+                return "Se obtiene el nombre: "+ UsuarioData.obtenerNombre(id);
+            }
+            catch
+            {
+                return "Error al obtener el nombre";
+            }
+
+        }
+        public static bool InicioSesion(string NombreUsuario, string Contraseña)
+        {
+            try
+            {
+                UsuarioData.ValidarLogin(NombreUsuario, Contraseña);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
     }
 }
