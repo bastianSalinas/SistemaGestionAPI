@@ -9,12 +9,7 @@ namespace SistemaGestionWebAPI.Controllers
     [ApiController]
     public class UsuarioController : ControllerBase
     {
-        [HttpGet(Name = "TraerUsuario")]
-        public IEnumerable<Usuario> Get()
-        {
-            return UsuarioBussiness.GetUsuarios()
-            .ToArray();
-        }
+        
 
         [HttpPost(Name = "CrearUsuario")]
         public void Crear([FromBody] Usuario usu)
@@ -33,16 +28,26 @@ namespace SistemaGestionWebAPI.Controllers
         {
             UsuarioBussiness.EliminarUsuario(usu);
         }
-        [HttpDelete(Name = "TraerNombre")]
-        public void GetNombre([FromBody] int idUsuario)
+
+        [HttpGet("TraerNombre/{idUsuario}", Name = "TraerNombre")]
+        public string GetNombre(int idUsuario)
         {
-            UsuarioBussiness.TraerNombre(idUsuario);
+            string nombre = UsuarioBussiness.TraerNombre(idUsuario);
+            return nombre;
         }
 
-        [HttpDelete(Name = "InicioSesion")]
-        public void validaLogin([FromBody] string nombre, string contraseña)
+        [HttpGet("ValidaLogin", Name = "InicioSesion")]
+        public bool ValidaLogin(string nombre, string contraseña)
         {
-            UsuarioBussiness.InicioSesion(nombre, contraseña);
+            bool validar = UsuarioBussiness.InicioSesion(nombre, contraseña);
+            return validar;
+        }
+
+        [HttpGet("TraerUsuario", Name = "TraerUsuario")]
+        public IEnumerable<Usuario> Get()
+        {
+            return UsuarioBussiness.GetUsuarios()
+            .ToArray();
         }
     }
 }
